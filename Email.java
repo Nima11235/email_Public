@@ -42,13 +42,13 @@ class Email  {
     
                    
     System.out.println("Please enter the message of the email");
-    String message = inFromUser.readLine();   
-    String messageTwo = "";    
+    String message = "";   
+    String messageTwo = inFromUser.readLine();    
     while (messageTwo.charAt(0) != '.') {
-      messageTwo = inFromUser.readLine();
       message = message + messageTwo;
+      messageTwo = inFromUser.readLine();
     }
- 
+    message = message + "\n."; 
     Socket clientSocket = null;
 
     try {
