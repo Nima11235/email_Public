@@ -1,4 +1,6 @@
-/**
+
+
+/*
 *  TCP Client Program
 *  Connects to a TCP Server
 *  Waits for a Welcome message from the server
@@ -17,17 +19,40 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-
 import java.net.Socket;
 
-class TcpClient {
+
+class Email  {
 
   public static void main(String[] argv) throws Exception {
 
+    BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
+   
+
+    System.out.println("Please enter the recipients email address");
+    final String toAddress = inFromUser.readLine();
+    System.out.println("Please enter your email address");
+    final String fromAddress  = inFromUser.readLine();
+    System.out.println("Please enter the recipients name address");
+    final String toName = inFromUser.readLine();
+    System.out.println("Please enter your name address");
+    final String fromName = inFromUser.readLine();
+    System.out.println("Please enter the subject of the email");
+    final String subject = inFromUser.readLine();
+    
+                   
+    System.out.println("Please enter the message of the email");
+    String message = inFromUser.readLine();   
+    String messageTwo = "";    
+    while (messageTwo.charAt(0) != '.') {
+      messageTwo = inFromUser.readLine();
+      message = message + messageTwo;
+    }
+ 
     Socket clientSocket = null;
 
     try {
-      clientSocket = new Socket("localhost", 6789);
+      clientSocket = new Socket("smtp.chapman.edu", 25);
     } catch (Exception e) {
       System.out.println("Failed to open socket connection");
       System.exit(0);
@@ -36,21 +61,51 @@ class TcpClient {
     BufferedReader inFromServer =  new BufferedReader(
         new InputStreamReader(clientSocket.getInputStream()));
 
-    String welcomeMessage = inFromServer.readLine();
-    System.out.println("FROM SERVER:" + welcomeMessage);
+    String serverMessage = inFromServer.readLine();
+    System.out.println("FROM SERVER:" + serverMessage);
 
-    System.out.print("First Sentence: ");
-    BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-    String sentence = inFromUser.readLine();
-    outToServer.println(sentence);
-    String modifiedSentence = inFromServer.readLine();
-    System.out.println("FROM SERVER: " + modifiedSentence);
+    System.out.println("HELO icd.chapman.edu");
+    outToServer.println("HELO icd.chapman.edu");
+    serverMessage = inFromServer.readLine();
+    System.out.println("FROM SERVER:" + serverMessage);
+   
+    System.out.println("MAIL FROM:" + fromAddress);
+    outToServer.println("MAIL FROM:" + fromAddress);
+    serverMessage = inFromServer.readLine();
+    System.out.println("FROM SERVER:" + serverMessage);
+    
+    System.out.println("RCPT TO:" + toAddress);
+    outToServer.println("RCPT TO:" + toAddress);
+    serverMessage = inFromServer.readLine();
+    System.out.println("FROM SERVER:" + serverMessage);
+    
+    System.out.println("DATA");
+    outToServer.println("DATA");
+    serverMessage = inFromServer.readLine();
+    System.out.println("FROM SERVER:" + serverMessage);
 
-    System.out.print("Second Sentence: ");
-    sentence = inFromUser.readLine();
-    outToServer.println(sentence);
-    modifiedSentence = inFromServer.readLine();
-    System.out.println("FROM SERVER: " + modifiedSentence);
+
+    System.out.println("From:" + fromName); 
+    outToServer.println("From:" + fromName);
+   
+    System.out.println("To:" + toName);
+    outToServer.println("To:" + toName);
+
+    System.out.println("Subject:" + subject);
+    outToServer.println("Subject:" + subject);
+    
+    System.out.println("Message:" + message);
+    outToServer.println("Message:" + message);
+    serverMessage = inFromServer.readLine();
+    System.out.println("FROM SERVER:" + serverMessage);
+
+
+    System.out.println("QUIT");
+    outToServer.println("QUIT");
+    serverMessage = inFromServer.readLine();
+    System.out.println("FROM SERVER:" + serverMessage);
+
+
 
     clientSocket.close();
   }
